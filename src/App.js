@@ -12,8 +12,8 @@ function App() {
 
   return (
     <div className="App">
-      <main>
-        <ControlBar
+      <body>
+      <ControlBar
           height={height}
           setHeight={setHeight}
           mute={mute}
@@ -21,8 +21,10 @@ function App() {
           solving={solving}
           setSolving={setSolving}
         />
-        <Display/>
-      </main>
+        <main>
+          <Display/>
+        </main>
+      </body>
     </div>
   );
 }
@@ -56,27 +58,21 @@ function ControlBar({height, setHeight, mute, setMute, solving, setSolving}) {
 function Display(props) {
   return (
     <div>
-      <Tower tower="1"/>
-      <Tower tower="2"/>
-      <Tower tower="3"/>
+      <Block tHeight="3" width="1" tower="1"/>
+      <Block tHeight="3" width="2" tower="1"/>
+      <Block tHeight="3" width="3" tower="1"/>
     </div>
   )
 }
 
-function Tower(props) {
-  const [height, setHeight] = useState(3);
+function Block({tHeight, width}) {
+  const pWidth = 1000 + ((width-1)/(tHeight-1))*3000;
   return (
-    <div>
-      
-    </div>
-  )
-}
-
-function Block(props) {
-  return (
-    <div>
-
-    </div>
+    <svg viewBox="0 0 4000 1000">
+      <rect
+        x="0" y="0" 
+        width={pWidth} height="100%" />
+    </svg>
   )
 }
 
