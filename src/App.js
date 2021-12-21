@@ -81,7 +81,7 @@ function Display({height, solving, setDone}) {
 function Block({tHeight, width}) {
   const pWidth = 1000 + ((width-1)/(tHeight-1))*3000;
   return (
-    <svg viewBox={`0 0 4000 1000`} className="block" key={width}>
+    <svg viewBox={`0 0 4000 1000`} preserveAspectRatio="none" className="block" key={width}>
       <rect
         x={2000-pWidth/2} y="0" 
         fill="red"
