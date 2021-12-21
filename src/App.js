@@ -5,8 +5,9 @@ function App() {
   const [height, setHeight]   = useState(3);
   const [mute, setMute]       = useState(false);
   const [solving, setSolving] = useState(false);
+  const [done, setDone]       = useState(false);
 
-  if (solving) {
+  if (done) {
     setTimeout(() => {setSolving(false)}, 2000);
   }
 
@@ -22,7 +23,11 @@ function App() {
           setSolving={setSolving}
         />
         <main>
-          <Display/>
+          <Display
+            height={height}
+            solving={solving}
+            setDone={setDone}
+          />
         </main>
       </body>
     </div>
@@ -55,32 +60,21 @@ function ControlBar({height, setHeight, mute, setMute, solving, setSolving}) {
   );
 }
 
-function Display(props) {
+function Display({height, solving, setDone}) {
+  if (solving) setDone(true); 
+  
+  const arr = [];
+  for (let i=1; i<=height; i++) arr.push(i);
   return (
     <div className="display">
       <div className="first tower">
-        <Block tHeight="6" width="1" tower="1"/>
-        <Block tHeight="6" width="2" tower="1"/>
-        <Block tHeight="6" width="3" tower="1"/>
-        <Block tHeight="6" width="4" tower="1"/>
-        <Block tHeight="6" width="5" tower="1"/>
-        <Block tHeight="6" width="6" tower="1"/>
+        {arr.map((width)=>{
+          return <Block tHeight={height} width={width}/>
+        })}
       </div>
       <div className="second tower">
-        <Block tHeight="6" width="1" tower="1"/>
-        <Block tHeight="6" width="2" tower="1"/>
-        <Block tHeight="6" width="3" tower="1"/>
-        <Block tHeight="6" width="4" tower="1"/>
-        <Block tHeight="6" width="5" tower="1"/>
-        <Block tHeight="6" width="6" tower="1"/>
       </div>
       <div className="third tower">
-        <Block tHeight="6" width="1" tower="1"/>
-        <Block tHeight="6" width="2" tower="1"/>
-        <Block tHeight="6" width="3" tower="1"/>
-        <Block tHeight="6" width="4" tower="1"/>
-        <Block tHeight="6" width="5" tower="1"/>
-        <Block tHeight="6" width="6" tower="1"/>
       </div>
     </div>
   )

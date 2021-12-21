@@ -35,7 +35,8 @@ main {
 .block {
     width: auto;
     height: auto;
-    max-height: 50px;
+    min-height: 5px;
+    max-height: 150px;
 }
 
 .tower {
@@ -44,6 +45,7 @@ main {
     grid-template-columns: 100%;
     row-gap: 1px;
     justify-items: center;
+    height: 30vh;
 }
 
 .display {
