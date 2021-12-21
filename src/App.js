@@ -13,7 +13,6 @@ function App() {
 
   return (
     <div className="App">
-      <body>
       <ControlBar
           height={height}
           setHeight={setHeight}
@@ -29,7 +28,6 @@ function App() {
             setDone={setDone}
           />
         </main>
-      </body>
     </div>
   );
 }
@@ -69,7 +67,7 @@ function Display({height, solving, setDone}) {
     <div className="display">
       <div className="first tower">
         {arr.map((width)=>{
-          return <Block tHeight={height} width={width}/>
+          return <Block tHeight={height} width={width} key={width}/>
         })}
       </div>
       <div className="second tower">
@@ -83,14 +81,15 @@ function Display({height, solving, setDone}) {
 function Block({tHeight, width}) {
   const pWidth = 1000 + ((width-1)/(tHeight-1))*3000;
   return (
-    <svg viewBox={`0 0 4000 1000`} className="block" >
+    <svg viewBox={`0 0 4000 1000`} className="block" key={width}>
       <rect
         x={2000-pWidth/2} y="0" 
         fill="red"
         stroke="black"
         strokeWidth="15"
         radius="20"
-        width={pWidth} height="100%" />
+        width={pWidth} height="100%" 
+        key={width}/>
     </svg>
   )
 }
