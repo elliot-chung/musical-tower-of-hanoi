@@ -10,6 +10,7 @@
 
 main {
     margin-left: 300px;
+
 }
 
 .sidebar {
@@ -29,4 +30,31 @@ main {
 .sidebar > input {
     height: 50px;
     width: 100px;
+}
+
+.block {
+    width: auto;
+    height: auto;
+    max-height: 50px;
+}
+
+.tower {
+    flex-basis: 100%;
+    display: grid;
+    grid-template-columns: 100%;
+    row-gap: 1px;
+    justify-items: center;
+}
+
+.display {
+    position: relative;
+    top: 30vh;
+    display: flex;
+    margin-left: 10px;
+    margin-right: 10px;
+    gap: 10px;
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* justify-items: center; */
+
 }
