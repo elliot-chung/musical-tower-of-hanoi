@@ -19,22 +19,15 @@ main {
     width: 300px;
     padding-top: 100px;
     border: 1px solid #303030;
-    display: grid;
-
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
     align-items: center;
-    grid-template-columns: 100%;
-    grid-template-rows: 200px 200px 200px;
 }
 
 .sidebar > input {
     height: 50px;
     width: 100px;
-}
-
-.block {
-    width: auto;
-    height: auto;
 }
 
 .tower {
