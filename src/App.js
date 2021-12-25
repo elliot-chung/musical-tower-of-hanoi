@@ -5,7 +5,10 @@ function App() {
   const [height, setHeight]   = useState(3);
   const [mute, setMute]       = useState(false);
   const [solving, setSolving] = useState(false);
+  const [state, updateState]  = useState();
+  const forceUpdate           = useCallback(() => updateState({}), []);
   const [done, setDone]       = useState(false);
+  const [reset, setReset]     = useState(false);
 
   // if (done) {
   //   setTimeout(() => {setSolving(false)}, 2000);
@@ -20,6 +23,8 @@ function App() {
           setMute={setMute}
           solving={solving}
           setSolving={setSolving}
+          setReset={setReset}
+          done={done}
         />
         <main>
           <Display
@@ -27,6 +32,7 @@ function App() {
             solving={solving}
             setDone={setDone}
             setSolving={setSolving}
+            forceUpdate={forceUpdate}
           />
         </main>
     </div>
@@ -34,18 +40,16 @@ function App() {
 }
 
 // Controls for solving a tower of a specific height 
-function ControlBar({height, setHeight, mute, setMute, solving, setSolving}) {
+function ControlBar({height, setHeight, mute, setMute, solving, setSolving, setReset, done}) {
   // Solve function runs upon clicking 'Solve'
   const solve = (event) => {
     event.preventDefault();
-    console.log("Height", height);
-    console.log("Mute", mute);
     setSolving(true);
   }
   
   // Return the DOM element 
   return (
-    <form onSubmit={solve} className="sidebar">
+    <form onSubmit={solving || done ? ()=>{setReset(true)} : solve} className="sidebar">
       <label className="height">
         <p>Tower Height: {height}</p>
         <input 
@@ -65,12 +69,12 @@ function ControlBar({height, setHeight, mute, setMute, solving, setSolving}) {
           onChange={(event)=>{setMute(event.target.checked)}}
         />
       </label>          
-      <input type="submit" value="Solve" disabled={solving}/>
+      <input type="submit" value={solving || done ? "Reset" : "Solve"}/>
     </form>
   );
 }
 
-function Display({height, solving, setDone, setSolving}) {
+function Display({height, solving, setDone, setSolving, forceUpdate}) {
   const t1 = [];
   for (let i=1; i<=height; i++) t1.push(i);
   const t2 = t1.map(()=>{return 0});
@@ -82,8 +86,9 @@ function Display({height, solving, setDone, setSolving}) {
 
   const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
   const moveTower = useCallback(async (mHeight, source, dest, temp) => {
-    await timeout(200);
     if (mHeight === 1) {
+      forceUpdate();
+      await timeout(200);
       const blockInd = source.findIndex(width => width !== 0);
       const blockWidth = source[blockInd];
       source[blockInd] = 0;
@@ -97,7 +102,7 @@ function Display({height, solving, setDone, setSolving}) {
     await moveTower(mHeight-1, source, temp, dest);
     await moveTower(1, source, dest, temp);
     await moveTower(mHeight-1, temp, dest, source);
-  }, []);
+  }, [forceUpdate]);
 
   useEffect(()=>{
     setArr1(t1);
@@ -105,12 +110,15 @@ function Display({height, solving, setDone, setSolving}) {
     setArr3(t3);
   }, [height]);
   
-  useEffect(async () => {
-    if (solving) {
-      await moveTower(height, tArr1, tArr3, tArr2);
-      setSolving(false);
-      setDone(true); 
+  useEffect(() => {
+    const solve = async ()=>{
+      if (solving) {
+        await moveTower(height, tArr1, tArr3, tArr2);
+        setSolving(false);
+        setDone(true); 
+      }
     }
+    solve();
   }, [solving, moveTower, height, tArr1, tArr2, tArr3, setSolving, setDone]);
 
 
