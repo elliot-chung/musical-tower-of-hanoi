@@ -73,21 +73,29 @@ function Display({height, solving, setDone, setSolving}) {
   const t1 = [];
   for (let i=1; i<=height; i++) t1.push(i);
   const t2 = t1.map(()=>{return 0});
-  const t3 = t2;
+  const t3 = t2.map(x=>x);
 
   const [tArr1, setArr1] = useState(t1);
   const [tArr2, setArr2] = useState(t2);
   const [tArr3, setArr3] = useState(t3);
 
-  const moveTower = useCallback((mHeight, source, setSource, dest, setDest, temp, setTemp) => {
+  const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const moveTower = useCallback(async (mHeight, source, dest, temp) => {
+    await timeout(5);
     if (mHeight === 1) {
       const blockInd = source.findIndex(width => width !== 0);
-      let copyArr = source;
-      copyArr[blockInd] = 0;
-      setSource(copyArr);
+      const blockWidth = source[blockInd];
+      source[blockInd] = 0;
+
+      const topBlockInd = dest.findIndex(width => width !== 0);
+      const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
+      dest[destInd] = blockWidth;
+
       return;
     }
-    moveTower(mHeight-1, source, setSource, temp, setTemp, dest, setDest);
+    await moveTower(mHeight-1, source, temp, dest);
+    await moveTower(1, source, dest, temp);
+    await moveTower(mHeight-1, temp, dest, source);
   }, []);
 
   useEffect(()=>{
@@ -96,9 +104,9 @@ function Display({height, solving, setDone, setSolving}) {
     setArr3(t3);
   }, [height]);
   
-  useEffect(() => {
+  useEffect(async () => {
     if (solving) {
-      moveTower(height, tArr1, setArr1, tArr2, setArr2, tArr3, setArr3);
+      await moveTower(height, tArr1, tArr3, tArr2);
       setSolving(false);
       setDone(true); 
     }
