@@ -25,6 +25,7 @@ function App() {
           setSolving={setSolving}
           setReset={setReset}
           done={done}
+          setDone={setDone}
         />
         <main>
           <Display
@@ -40,7 +41,7 @@ function App() {
 }
 
 // Controls for solving a tower of a specific height 
-function ControlBar({height, setHeight, mute, setMute, solving, setSolving, setReset, done}) {
+function ControlBar({height, setHeight, mute, setMute, solving, setSolving, setReset, done, setDone}) {
   // Solve function runs upon clicking 'Solve'
   const solve = (event) => {
     event.preventDefault();
@@ -57,7 +58,12 @@ function ControlBar({height, setHeight, mute, setMute, solving, setSolving, setR
           min="3" 
           max="88" 
           value={height} 
-          onChange={(event)=>{setHeight(event.target.value)}}
+          onChange={(event)=>{
+            setHeight(event.target.value);
+            setReset(false);
+            setSolving(false);
+            setDone(false);
+          }}
           disabled={solving}
         />
       </label>
@@ -88,7 +94,7 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
   const moveTower = useCallback(async (mHeight, source, dest, temp) => {
     if (mHeight === 1) {
       forceUpdate();
-      await timeout(200);
+      await timeout(20);
       const blockInd = source.findIndex(width => width !== 0);
       const blockWidth = source[blockInd];
       source[blockInd] = 0;
