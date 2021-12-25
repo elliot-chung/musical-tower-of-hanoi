@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Piano, MidiNumbers } from 'react-piano';
 import { Soundfont } from 'soundfont-player';
 import './index.css';
 
@@ -197,7 +196,6 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
 
   // Return DOM element
   return (
-    <>
       <div className="display">
         <div className="first tower">
           {firstTower}
@@ -209,17 +207,6 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
           {thirdTower}
         </div>
       </div>
-
-      <Piano
-        noteRange={{ first: MidiNumbers.fromNote('c3'), 
-                     last: MidiNumbers.fromNote('f5') 
-                    }}
-        playNote={(midiNumber) => {
-        }}
-        stopNote={(midiNumber) => {
-        }}
-      />
-    </>
   )
 }
 
