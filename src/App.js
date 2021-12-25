@@ -154,6 +154,10 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
       const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
       dest[destInd] = blockWidth;
 
+      Soundfont.instrument(new AudioContext(), 'clavinet').then(function (clavinet) {
+        clavinet.play('C4')
+      });
+
       return; // Function concludes here when moving a single block
     }
     // Move all the blocks above the bottom block in the source tower to the temporary tower
