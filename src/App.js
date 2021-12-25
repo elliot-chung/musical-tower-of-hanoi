@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
+import { Piano, MidiNumbers } from 'react-piano';
+import { Soundfont } from 'soundfont-player';
 import './index.css';
 
 function App() {
@@ -139,17 +141,27 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
   })
 
   return (
-    <div className="display">
-      <div className="first tower">
-        {firstTower}
+    <>
+      <div className="display">
+        <div className="first tower">
+          {firstTower}
+        </div>
+        <div className="second tower">
+          {secondTower}
+        </div>
+        <div className="third tower">
+          {thirdTower}
+        </div>
       </div>
-      <div className="second tower">
-        {secondTower}
-      </div>
-      <div className="third tower">
-        {thirdTower}
-      </div>
-    </div>
+
+      <Piano
+        noteRange={{ first: MidiNumbers.fromNote('c3'), last: MidiNumbers.fromNote('f5') }}
+        playNote={(midiNumber) => {
+        }}
+        stopNote={(midiNumber) => {
+        }}
+      />
+    </>
   )
 }
 
