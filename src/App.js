@@ -54,6 +54,7 @@ function ControlBar({height, setHeight, mute, setMute, solving, setSolving}) {
           max="88" 
           value={height} 
           onChange={(event)=>{setHeight(event.target.value)}}
+          disabled={solving}
         />
       </label>
       <label className="mute">
@@ -81,7 +82,7 @@ function Display({height, solving, setDone, setSolving}) {
 
   const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
   const moveTower = useCallback(async (mHeight, source, dest, temp) => {
-    await timeout(5);
+    await timeout(200);
     if (mHeight === 1) {
       const blockInd = source.findIndex(width => width !== 0);
       const blockWidth = source[blockInd];
