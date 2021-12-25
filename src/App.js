@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Soundfont } from 'soundfont-player';
 import './index.css';
+var Soundfont = require('soundfont-player')
+var ac = new AudioContext()
 
 /**
  * This is the top level App component
@@ -154,7 +155,7 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
       const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
       dest[destInd] = blockWidth;
 
-      Soundfont.instrument(new AudioContext(), 'clavinet').then(function (clavinet) {
+      Soundfont.instrument(ac, 'clavinet').then(function (clavinet) {
         clavinet.play('C4')
       });
 
