@@ -78,7 +78,7 @@ function ControlBar({height, setHeight, mute,
         <input 
           type="range" 
           min="3" 
-          max="88" 
+          max="48" 
           value={height} 
           onChange={(event)=>{
             // Set states whenever slider value changes
@@ -143,7 +143,7 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
   const moveTower = useCallback(async (mHeight, source, dest, temp) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
       forceUpdate();     // Force rerender to display each step of the algorithm
-      await timeout(1000);  // Wait some amount of time for all values to update
+      await timeout(200);  // Wait some amount of time for all values to update
 
       // Find the block to move and store its width before removing it
       const blockInd = source.findIndex(width => width !== 0);
@@ -155,8 +155,23 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
       const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
       dest[destInd] = blockWidth;
 
-      Soundfont.instrument(ac, 'clavinet').then(function (clavinet) {
-        clavinet.play('C4')
+      // Calculate the the note to play
+      const noteInd = ((blockWidth + 3) % 7);
+      const noteArr = ["G", "F", "E", "D", "C", "B", "A"];
+      
+      const towerHeightLevel = Math.floor(source.length/7);
+      const startOctArr = ["4", "4", "4", "5", "6", "7", "8"];
+      const startOct = startOctArr[towerHeightLevel];
+
+      const blockHeightLevel = Math.ceil((blockWidth-1)/7);
+      const octArr = ["1", "2", "3", "4", "5", "6", "7", "8"];
+      const octStartInd = octArr.findIndex(oct=>oct===startOct);
+      const octInd = octStartInd - blockHeightLevel;
+
+      // Play the note
+      const note = `${noteArr[noteInd]}${octArr[octInd]}`;
+      Soundfont.instrument(ac, "acoustic_grand_piano").then(function (instrument) {
+        instrument.play(note);
       });
 
       return; // Function concludes here when moving a single block
