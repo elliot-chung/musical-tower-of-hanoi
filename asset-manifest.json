@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/musical-tower-of-hanoi/static/css/main.21211c22.css",
-    "main.js": "/musical-tower-of-hanoi/static/js/main.bcfc35af.js",
+    "main.css": "/musical-tower-of-hanoi/static/css/main.748e8188.css",
+    "main.js": "/musical-tower-of-hanoi/static/js/main.f999d185.js",
     "index.html": "/musical-tower-of-hanoi/index.html",
-    "main.21211c22.css.map": "/musical-tower-of-hanoi/static/css/main.21211c22.css.map",
-    "main.bcfc35af.js.map": "/musical-tower-of-hanoi/static/js/main.bcfc35af.js.map"
+    "main.748e8188.css.map": "/musical-tower-of-hanoi/static/css/main.748e8188.css.map",
+    "main.f999d185.js.map": "/musical-tower-of-hanoi/static/js/main.f999d185.js.map"
   },
   "entrypoints": [
-    "static/css/main.21211c22.css",
-    "static/js/main.bcfc35af.js"
+    "static/css/main.748e8188.css",
+    "static/js/main.f999d185.js"
   ]
 }
