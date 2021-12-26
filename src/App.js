@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import './index.css';
-const Soundfont = require('soundfont-player')
+import './index.css'; 
+const Soundfont = require('soundfont-player');
+const ac = new AudioContext()
 
 /**
  * This is the top level App component
@@ -173,10 +174,10 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
 
       // Play the note
       const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      // Soundfont.instrument(new AudioContext(), "acoustic_grand_piano")
-      //          .then(function (instrument) {
-      //             instrument.play(note, 0, {gain: volume/100});
-      //           });
+      Soundfont.instrument(ac, "acoustic_grand_piano")
+               .then(function (instrument) {
+                  instrument.play(note, 0, {gain: volume/100});
+                });
 
       return; // Function concludes here when moving a single block
     }
