@@ -83,7 +83,7 @@ function ControlBar({height, setHeight, volume,
           value={height} 
           onChange={(event)=>{
             // Set states whenever slider value changes
-            setHeight(event.target.value);
+            setHeight(Number(event.target.value));
             setReset(false);
             setSolving(false);
             setDone(false);
@@ -98,7 +98,7 @@ function ControlBar({height, setHeight, volume,
           min="0"
           max="100"
           value={volume}
-          onChange={(event)=>{setVolume(event.target.value)} /* Set state when volume box is changed */}
+          onChange={(event)=>{setVolume(Number(event.target.value))} /* Set state when volume box is changed */}
           disabled={solving /* Disable slider while solving */}
         />
       </label>          
@@ -174,10 +174,11 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
 
       // Play the note
       const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      Soundfont.instrument(ac, "acoustic_grand_piano")
-               .then(function (instrument) {
-                  instrument.play(note, 0, {gain: volume/100});
-                });
+      volume !== 0 && Soundfont.instrument(ac, "acoustic_grand_piano")
+                        .then(function (instrument) {
+                        instrument.play(note, 0, {gain: volume/100});
+                        console.log(volume);
+                        });
 
       return; // Function concludes here when moving a single block
     }
