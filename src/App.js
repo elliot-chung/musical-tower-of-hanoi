@@ -96,6 +96,7 @@ function ControlBar({height, setHeight, volume,
             setDone(false);
           }}
           disabled={solving /* Disable slider while solving */}
+          className="slider"
         />
       </label>
       <label className="volume">
@@ -107,6 +108,7 @@ function ControlBar({height, setHeight, volume,
           value={volume}
           onChange={(event)=>{setVolume(Number(event.target.value))} /* Set state when volume box is changed */}
           disabled={solving /* Disable slider while solving */}
+          className="slider"
         />
       </label> 
       <label className="speed">
@@ -118,9 +120,12 @@ function ControlBar({height, setHeight, volume,
           value={speed}
           onChange={(event)=>{setSpeed(Number(event.target.value))} /* Set state when volume box is changed */}
           disabled={solving /* Disable slider while solving */}
+          className="slider"
         />
       </label>          
-      <input type="submit" value={solving || done ? "Reset" : "Solve"}/> {/*Display text that aligns with function*/}
+      <input type="submit" 
+             value={solving || done ? "Reset" : "Solve" /*Display text that aligns with function*/}
+             className={solving || done ? "submit reset" : "submit solve"}/> 
     </form>
   );
 }
@@ -280,9 +285,8 @@ function Block({tHeight, width}) {
       <rect
         x={2000-pWidth/2} y="0" 
         fill="red"
-        stroke="black"
-        strokeWidth="15"
-        radius="20"
+        strokeWidth="0"
+        rx="100"
         width={pWidth} height="100%" 
         key={width+"rect"}/>
     </svg>
