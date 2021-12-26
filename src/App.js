@@ -13,6 +13,7 @@ function App() {
   const [volume, setVolume]   = useState(100);
   const [solving, setSolving] = useState(false);
   const [done, setDone]       = useState(false);
+  const [speed, setSpeed]     = useState(150);
   const [reset, setReset]     = useState(false);
 
   // Dummy state & function for forcing re-rerender
@@ -31,6 +32,8 @@ function App() {
           setSolving={setSolving}
           done={done}
           setDone={setDone}
+          speed={speed}
+          setSpeed={setSpeed}
           setReset={setReset}
         />
         <main>
@@ -38,6 +41,7 @@ function App() {
             height={height}
             solving={solving}
             volume={volume}
+            speed={speed}
             setDone={setDone}
             setSolving={setSolving}
             forceUpdate={forceUpdate}
@@ -52,17 +56,20 @@ function App() {
  * @constructor
  * @param {number}   height     - The height state of the app
  * @param {function} setHeight  - The setter function for the height state
- * @param {boolean}  volume     - The volume state of the app
+ * @param {number}   volume     - The volume state of the app
  * @param {function} setVolume  - The setter function for the volume state
  * @param {boolean}  solving    - The solving state of the app
  * @param {function} setSolving - The setter function for the solving state
  * @param {boolean}  done       - The done state of the app
  * @param {function} setDone    - The setter function for the done state
+ * @param {number}   speed      - The speed state of the app
+ * @param {function} setSpeed   - The setter function for the speed state
  * @param {function} setReset   - The setter function for the reset state
  */
 function ControlBar({height, setHeight, volume, 
                      setVolume, solving, setSolving, 
-                     done, setDone, setReset}) {
+                     done, setDone, speed, 
+                     setSpeed, setReset}) {
   // Solve function runs upon clicking 'Solve'
   const solve = (event) => {
     event.preventDefault();
@@ -101,6 +108,17 @@ function ControlBar({height, setHeight, volume,
           onChange={(event)=>{setVolume(Number(event.target.value))} /* Set state when volume box is changed */}
           disabled={solving /* Disable slider while solving */}
         />
+      </label> 
+      <label className="speed">
+        <p>BPM: {speed}</p> 
+        <input 
+          type="range" 
+          min="30"
+          max="300"
+          value={speed}
+          onChange={(event)=>{setSpeed(Number(event.target.value))} /* Set state when volume box is changed */}
+          disabled={solving /* Disable slider while solving */}
+        />
       </label>          
       <input type="submit" value={solving || done ? "Reset" : "Solve"}/> {/*Display text that aligns with function*/}
     </form>
@@ -112,11 +130,16 @@ function ControlBar({height, setHeight, volume,
  * @constructor
  * @param {number}   height      - The height state of the app
  * @param {boolean}  solving     - The solving state of the app
+ * @param {number}   volume      - The volume state of the app
+ * @param {number}   speed       - The speed state of the app
  * @param {function} setDone     - The setter function for the done state
  * @param {function} setSolving  - The setter function for the solving state
  * @param {function} forceUpdate - The top level force rerender function
  */
-function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
+function Display({height, solving, volume, speed, setDone, setSolving, forceUpdate}) {
+  // Calculate the time between notes in ms
+  const pause = 60000/speed;
+
   // Internal arrays representing each tower and the widths of the blocks inside them
   const t1 = [];
   for (let i=1; i<=height; i++) t1.push(i);
@@ -143,11 +166,13 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
    * @param {number[]} source  - An array of widths representing the source tower
    * @param {number[]} dest    - An array of widths representing the destination tower
    * @param {number[]} temp    - An array of widths representing the temporary tower
+   * @param {number}   volume  - A number from 0 to 100 representing volume
+   * @param {number}   speed   - A number from 30 to 200 representing BPM
    */
-  const moveTower = useCallback(async (mHeight, source, dest, temp, volume) => {
+  const moveTower = useCallback(async (mHeight, source, dest, temp, volume, pause) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
       forceUpdate();     // Force rerender to display each step of the algorithm
-      await timeout(300);  // Wait some amount of time for all values to update
+      await timeout(pause);  // Wait some amount of time for all values to update
 
       // Find the block to move and store its width before removing it
       const blockInd = source.findIndex(width => width !== 0);
@@ -177,17 +202,16 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
       volume !== 0 && Soundfont.instrument(ac, "acoustic_grand_piano")
                         .then(function (instrument) {
                         instrument.play(note, 0, {gain: volume/100});
-                        console.log(volume);
                         });
 
       return; // Function concludes here when moving a single block
     }
     // Move all the blocks above the bottom block in the source tower to the temporary tower
-    await moveTower(mHeight-1, source, temp, dest, volume); 
+    await moveTower(mHeight-1, source, temp, dest, volume, pause); 
     // Move the the bottom block in the source tower to the destination tower
-    await moveTower(1, source, dest, temp, volume);
+    await moveTower(1, source, dest, temp, volume, pause);
     // Move all the blocks that were moved to the temporary tower to the destination tower
-    await moveTower(mHeight-1, temp, dest, source, volume);
+    await moveTower(mHeight-1, temp, dest, source, volume, pause);
   }, [forceUpdate]);
 
   // Set the tower display state whenever the height state changes
@@ -197,15 +221,12 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
     setArr3(t3);
   }, [height]);
 
-  useEffect(()=>{
-    
-  }, [volume])
   
   // Solve function runs when solving state is true
   useEffect(() => {
     const solve = async ()=>{
       if (solving) {
-        await moveTower(height, tArr1, tArr3, tArr2, volume);
+        await moveTower(height, tArr1, tArr3, tArr2, volume, pause);
         setSolving(false);
         setDone(true); 
       }
