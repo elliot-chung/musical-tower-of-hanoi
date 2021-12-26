@@ -173,10 +173,10 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
 
       // Play the note
       const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      Soundfont.instrument(new AudioContext(), "acoustic_grand_piano")
-               .then(function (instrument) {
-                  instrument.play(note, 0, {gain: volume/100});
-                });
+      // Soundfont.instrument(new AudioContext(), "acoustic_grand_piano")
+      //          .then(function (instrument) {
+      //             instrument.play(note, 0, {gain: volume/100});
+      //           });
 
       return; // Function concludes here when moving a single block
     }
