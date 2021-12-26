@@ -1,70 +1,17 @@
-# Getting Started with Create React App
+# The Musical Tower of Hanoi
+## The Puzzle Itself
+[The Tower of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) is a mathematical puzzle involving three towers and many disks. These disks are first arranged in a single tower such that every disk is smaller than the one underneath it. The objective of the puzzle is to move this tower to another positions in the same order while obeying three rules. 
+1. Only a single disk may be moved at once
+2. Only the top disk from any tower may be moved
+3. Every disk must always smaller than the disk it sits on top of
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## The 'Musical' Solve
+The tower is solved recursively to achieve the optimal solve. Each piece has a note associated with it that play whenever it is moved. The top block is always a 'C' note and the subsequent blocks walk down the C major scale. 
 
-## Available Scripts
+## Tools
+Midi sounds are thanks to @danigb's [soundfont-player](https://github.com/danigb/soundfont-player)
 
-In the project directory, you can run:
+## Inspiration
+I originally wanted to make this project based on [this](https://www.youtube.com/watch?v=PGuRmqpr6Oo) youtube video I watched a while back. 
+[![Alt text](https://img.youtube.com/vi/PGuRmqpr6Oo/0.jpg)](https://www.youtube.com/watch?v=PGuRmqpr6OoD)
 
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
