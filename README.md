@@ -1,4 +1,7 @@
 # The Musical Tower of Hanoi
+## [Link to the Website](https://ec-2018.github.io/musical-tower-of-hanoi/)
+  
+  
 ## The Puzzle Itself
 [The Tower of Hanoi](https://en.wikipedia.org/wiki/Tower_of_Hanoi) is a mathematical puzzle involving three towers and many disks. These disks are first arranged in a single tower such that every disk is smaller than the one underneath it. The objective of the puzzle is to move this tower to another positions in the same order while obeying three rules. 
 1. Only a single disk may be moved at once
