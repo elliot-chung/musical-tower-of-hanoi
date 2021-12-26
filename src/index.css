@@ -30,6 +30,16 @@ main {
     width: 100px;
 }
 
+.sidebar > label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.sidebar > label > p {
+    padding-bottom: 10px;
+}
+
 .tower {
     flex-basis: 100%;
     display: flex;

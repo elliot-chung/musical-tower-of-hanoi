@@ -10,7 +10,7 @@ var ac = new AudioContext()
 function App() {
   // Top level states
   const [height, setHeight]   = useState(3);
-  const [mute, setMute]       = useState(false);
+  const [volume, setVolume]   = useState(50);
   const [solving, setSolving] = useState(false);
   const [done, setDone]       = useState(false);
   const [reset, setReset]     = useState(false);
@@ -25,8 +25,8 @@ function App() {
       <ControlBar
           height={height}
           setHeight={setHeight}
-          mute={mute}
-          setMute={setMute}
+          volume={volume}
+          setVolume={setVolume}
           solving={solving}
           setSolving={setSolving}
           done={done}
@@ -51,16 +51,16 @@ function App() {
  * @constructor
  * @param {number}   height     - The height state of the app
  * @param {function} setHeight  - The setter function for the height state
- * @param {boolean}  mute       - The mute state of the app
- * @param {function} setMute    - The setter function for the mute state
+ * @param {boolean}  volume     - The volume state of the app
+ * @param {function} setVolume  - The setter function for the volume state
  * @param {boolean}  solving    - The solving state of the app
  * @param {function} setSolving - The setter function for the solving state
  * @param {boolean}  done       - The done state of the app
  * @param {function} setDone    - The setter function for the done state
  * @param {function} setReset   - The setter function for the reset state
  */
-function ControlBar({height, setHeight, mute, 
-                     setMute, solving, setSolving, 
+function ControlBar({height, setHeight, volume, 
+                     setVolume, solving, setSolving, 
                      done, setDone, setReset}) {
   // Solve function runs upon clicking 'Solve'
   const solve = (event) => {
@@ -90,12 +90,14 @@ function ControlBar({height, setHeight, mute,
           disabled={solving /* Disable slider while solving */}
         />
       </label>
-      <label className="mute">
-        <span>Mute: </span> 
+      <label className="volume">
+        <p>Volume: {volume}</p> 
         <input 
-          type="checkbox" 
-          checked={mute} 
-          onChange={(event)=>{setMute(event.target.checked)} /* Set state when mute box is clicked */}
+          type="range" 
+          min="0"
+          max="100"
+          value={volume}
+          onChange={(event)=>{setVolume(event.target.value)} /* Set state when mute box is clicked */}
         />
       </label>          
       <input type="submit" value={solving || done ? "Reset" : "Solve"}/> {/*Display text that aligns with function*/}
