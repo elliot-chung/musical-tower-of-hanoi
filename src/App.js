@@ -153,8 +153,9 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
 
   // Color pallette arrays
   const rainbow = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+  const light1 = ["rgb(255, 248, 243)", "rgb(163, 228, 219)", "rgb(28, 109, 208)", "rgb(254, 209, 239)"];
 
-  const pallette = rainbow;
+  const pallette = light1;
 
   // Internal arrays representing the colors of each tower
   const c1 = t1.map((value, index)=>{return index % pallette.length});
@@ -303,9 +304,10 @@ function Block({tHeight, width, color}) {
   const pWidth = (width===0 ? 0 : 1000 + ((width-1)/(tHeight-1))*3000);
   // Calculate ry property accounting for distortion
   const radiusY = 100 + (Math.min((tHeight-3)/20, 1)*400);
+
   return ( // Returns a centered svg rectangle with the correct width 
     <svg 
-      viewBox={`0 0 4000 1000`} 
+      viewBox={"0 0 4000 1000"} 
       preserveAspectRatio="none" 
       className={width===0 ? "emptyBlock": "block"} 
       key={width+"cnt"}
@@ -313,11 +315,11 @@ function Block({tHeight, width, color}) {
       <rect
         x={2000-pWidth/2} y="0" 
         fill={color}
-        strokeWidth="0"
         rx="100"
         ry={radiusY}
         width={pWidth} height="100%" 
-        key={width+"rect"}/>
+        key={width+"rect"}
+      />
     </svg>
   )
 }
