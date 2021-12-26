@@ -9,6 +9,7 @@
 The tower is solved recursively to achieve the optimal solve. Each piece has a note associated with it that play whenever it is moved. The top block is always a 'C' note and the subsequent blocks walk down the C major scale. 
 
 ## Tools
+Built in React  
 Midi sounds are thanks to @danigb's [soundfont-player](https://github.com/danigb/soundfont-player)
 
 ## Inspiration
