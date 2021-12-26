@@ -151,10 +151,25 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
   const t2 = t1.map(()=>{return 0});
   const t3 = t2.map(x=>x);
 
+  // Color pallette arrays
+  const rainbow = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
+
+  const pallette = rainbow;
+
+  // Internal arrays representing the colors of each tower
+  const c1 = t1.map((value, index)=>{return index % pallette.length});
+  const c2 = c1.map(()=>{return -1});
+  const c3 = c2.map(x=>x);
+
   // States representing each tower
   const [tArr1, setArr1] = useState(t1);
   const [tArr2, setArr2] = useState(t2);
   const [tArr3, setArr3] = useState(t3);
+
+  // States representing each tower's colors
+  const [cArr1, setColors1] = useState(c1);
+  const [cArr2, setColors2] = useState(c2);
+  const [cArr3, setColors3] = useState(c3);
 
   // Timeout function for pausing between each move
   const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -174,17 +189,23 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
    * @param {number}   volume  - A number from 0 to 100 representing volume
    * @param {number}   speed   - A number from 30 to 200 representing BPM
    */
-  const moveTower = useCallback(async (mHeight, source, dest, temp, volume, pause) => {
+  const moveTower = useCallback(async (mHeight, 
+                                       source, dest, temp,
+                                       cSource, cDest, cTemp,
+                                       volume, pause) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
       // Find the block to move and store its width before removing it
       const blockInd = source.findIndex(width => width !== 0);
       const blockWidth = source[blockInd];
+      const blockColor = cSource[blockInd];
       source[blockInd] = 0;
+      cSource[blockInd] = -1;
 
       // Find the correct destination index in the dest array and add the stored block
       const topBlockInd = dest.findIndex(width => width !== 0);
       const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
       dest[destInd] = blockWidth;
+      cDest[destInd] = blockColor;
 
       // Calculate the the note to play
       const noteInd = ((blockWidth + 3) % 7);
@@ -211,11 +232,11 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
       return; // Function concludes here when moving a single block
     }
     // Move all the blocks above the bottom block in the source tower to the temporary tower
-    await moveTower(mHeight-1, source, temp, dest, volume, pause); 
+    await moveTower(mHeight-1, source, temp, dest, cSource, cTemp, cDest, volume, pause); 
     // Move the the bottom block in the source tower to the destination tower
-    await moveTower(1, source, dest, temp, volume, pause);
+    await moveTower(1, source, dest, temp, cSource, cDest, cTemp, volume, pause);
     // Move all the blocks that were moved to the temporary tower to the destination tower
-    await moveTower(mHeight-1, temp, dest, source, volume, pause);
+    await moveTower(mHeight-1, temp, dest, source, cTemp, cDest, cSource, volume, pause);
   }, [forceUpdate]);
 
   // Set the tower display state whenever the height state changes
@@ -223,6 +244,9 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
     setArr1(t1);
     setArr2(t2);
     setArr3(t3);
+    setColors1(c1);
+    setColors2(c2);
+    setColors3(c3);
   }, [height]);
 
   
@@ -230,7 +254,10 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
   useEffect(() => {
     const solve = async ()=>{
       if (solving) {
-        await moveTower(height, tArr1, tArr3, tArr2, volume, pause);
+        await moveTower(height, 
+                        tArr1, tArr3, tArr2, 
+                        cArr1, cArr3, cArr2, 
+                        volume, pause);
         setSolving(false);
         setDone(true); 
       }
@@ -240,13 +267,13 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
 
   // Generate JSX based on states
   const firstTower = tArr1.map((width, index)=>{
-    return <Block tHeight={height} width={width} key={index+"t1"}/>
+    return <Block tHeight={height} width={width} color={pallette[cArr1[index]]} key={index+"t1"}/>
   })
   const secondTower = tArr2.map((width, index)=>{
-    return <Block tHeight={height} width={width} key={index+"t2"}/>
+    return <Block tHeight={height} width={width} color={pallette[cArr2[index]]} key={index+"t2"}/>
   })
   const thirdTower = tArr3.map((width, index)=>{
-    return <Block tHeight={height} width={width} key={index+"t3"}/>
+    return <Block tHeight={height} width={width} color={pallette[cArr3[index]]} key={index+"t3"}/>
   })
 
   // Return DOM element
@@ -271,9 +298,11 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
  * @param {number} tHeight - The tower height
  * @param {number} width   - The width of the block
  */
-function Block({tHeight, width}) {
+function Block({tHeight, width, color}) {
   // Calculate the pixel width from width input from the tower state array
   const pWidth = (width===0 ? 0 : 1000 + ((width-1)/(tHeight-1))*3000);
+  // Calculate ry property accounting for distortion
+  const radiusY = 100 + (Math.min((tHeight-3)/20, 1)*400);
   return ( // Returns a centered svg rectangle with the correct width 
     <svg 
       viewBox={`0 0 4000 1000`} 
@@ -283,9 +312,10 @@ function Block({tHeight, width}) {
     >
       <rect
         x={2000-pWidth/2} y="0" 
-        fill="red"
+        fill={color}
         strokeWidth="0"
         rx="100"
+        ry={radiusY}
         width={pWidth} height="100%" 
         key={width+"rect"}/>
     </svg>
