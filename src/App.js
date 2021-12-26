@@ -146,7 +146,7 @@ function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
   const moveTower = useCallback(async (mHeight, source, dest, temp, volume) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
       forceUpdate();     // Force rerender to display each step of the algorithm
-      await timeout(200);  // Wait some amount of time for all values to update
+      await timeout(300);  // Wait some amount of time for all values to update
 
       // Find the block to move and store its width before removing it
       const blockInd = source.findIndex(width => width !== 0);
