@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import './index.css';
-var Soundfont = require('soundfont-player')
-var ac = new AudioContext()
+const Soundfont = require('soundfont-player')
 
 /**
  * This is the top level App component
@@ -10,7 +9,7 @@ var ac = new AudioContext()
 function App() {
   // Top level states
   const [height, setHeight]   = useState(3);
-  const [volume, setVolume]   = useState(50);
+  const [volume, setVolume]   = useState(100);
   const [solving, setSolving] = useState(false);
   const [done, setDone]       = useState(false);
   const [reset, setReset]     = useState(false);
@@ -37,6 +36,7 @@ function App() {
           <Display
             height={height}
             solving={solving}
+            volume={volume}
             setDone={setDone}
             setSolving={setSolving}
             forceUpdate={forceUpdate}
@@ -97,7 +97,8 @@ function ControlBar({height, setHeight, volume,
           min="0"
           max="100"
           value={volume}
-          onChange={(event)=>{setVolume(event.target.value)} /* Set state when mute box is clicked */}
+          onChange={(event)=>{setVolume(event.target.value)} /* Set state when volume box is changed */}
+          disabled={solving /* Disable slider while solving */}
         />
       </label>          
       <input type="submit" value={solving || done ? "Reset" : "Solve"}/> {/*Display text that aligns with function*/}
@@ -114,7 +115,7 @@ function ControlBar({height, setHeight, volume,
  * @param {function} setSolving  - The setter function for the solving state
  * @param {function} forceUpdate - The top level force rerender function
  */
-function Display({height, solving, setDone, setSolving, forceUpdate}) {
+function Display({height, solving, volume, setDone, setSolving, forceUpdate}) {
   // Internal arrays representing each tower and the widths of the blocks inside them
   const t1 = [];
   for (let i=1; i<=height; i++) t1.push(i);
@@ -142,7 +143,7 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
    * @param {number[]} dest    - An array of widths representing the destination tower
    * @param {number[]} temp    - An array of widths representing the temporary tower
    */
-  const moveTower = useCallback(async (mHeight, source, dest, temp) => {
+  const moveTower = useCallback(async (mHeight, source, dest, temp, volume) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
       forceUpdate();     // Force rerender to display each step of the algorithm
       await timeout(200);  // Wait some amount of time for all values to update
@@ -172,18 +173,19 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
 
       // Play the note
       const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      Soundfont.instrument(ac, "acoustic_grand_piano").then(function (instrument) {
-        instrument.play(note);
-      });
+      Soundfont.instrument(new AudioContext(), "acoustic_grand_piano")
+               .then(function (instrument) {
+                  instrument.play(note, 0, {gain: volume/100});
+                });
 
       return; // Function concludes here when moving a single block
     }
     // Move all the blocks above the bottom block in the source tower to the temporary tower
-    await moveTower(mHeight-1, source, temp, dest); 
+    await moveTower(mHeight-1, source, temp, dest, volume); 
     // Move the the bottom block in the source tower to the destination tower
-    await moveTower(1, source, dest, temp);
+    await moveTower(1, source, dest, temp, volume);
     // Move all the blocks that were moved to the temporary tower to the destination tower
-    await moveTower(mHeight-1, temp, dest, source);
+    await moveTower(mHeight-1, temp, dest, source, volume);
   }, [forceUpdate]);
 
   // Set the tower display state whenever the height state changes
@@ -192,12 +194,16 @@ function Display({height, solving, setDone, setSolving, forceUpdate}) {
     setArr2(t2);
     setArr3(t3);
   }, [height]);
+
+  useEffect(()=>{
+    
+  }, [volume])
   
   // Solve function runs when solving state is true
   useEffect(() => {
     const solve = async ()=>{
       if (solving) {
-        await moveTower(height, tArr1, tArr3, tArr2);
+        await moveTower(height, tArr1, tArr3, tArr2, volume);
         setSolving(false);
         setDone(true); 
       }
