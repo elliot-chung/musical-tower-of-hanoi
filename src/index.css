@@ -101,7 +101,8 @@ main {
     flex-direction: column;
     gap: 1px;
     justify-items: center;
-    height: 40vh;
+    height: 50vh;
+    /* border: 1px solid rgb(0,0,0); */
 }
 
 .block {
@@ -115,5 +116,18 @@ main {
     display: flex;
     margin-left: 50px;
     margin-right: 50px;
+    height: 100vh;
     gap: 10px;
 }
+
+@media screen and (orientation: portrait) {
+    .display {
+        padding-top: 5vh;
+        padding-bottom: 5vh;
+        flex-direction: column;
+        top: 0;
+    }
+    .tower {
+        height: 30vh;
+    }
+} 

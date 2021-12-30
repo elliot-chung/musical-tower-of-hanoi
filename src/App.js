@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import './index.css'; 
 const Soundfont = require('soundfont-player');
 const ac = new AudioContext()
@@ -15,10 +15,6 @@ function App() {
   const [done, setDone]       = useState(false);
   const [speed, setSpeed]     = useState(150);
   const [reset, setReset]     = useState(false);
-
-  // Dummy state & function for forcing re-rerender
-  const [state, updateState]  = useState();
-  const forceUpdate           = useCallback(() => updateState({}), []);
   
   //Return the DOM element 
   return (
@@ -44,7 +40,6 @@ function App() {
             speed={speed}
             setDone={setDone}
             setSolving={setSolving}
-            forceUpdate={forceUpdate}
           />
         </main>
     </div>
@@ -71,10 +66,10 @@ function ControlBar({height, setHeight, volume,
                      done, setDone, speed, 
                      setSpeed, setReset}) {
   // Solve function runs upon clicking 'Solve'
-  const solve = (event) => {
+  const solve = useCallback((event) => {
     event.preventDefault();
     setSolving(true);
-  }
+  },[setSolving]);
   
   // Return the DOM element 
   return (
@@ -139,28 +134,30 @@ function ControlBar({height, setHeight, volume,
  * @param {number}   speed       - The speed state of the app
  * @param {function} setDone     - The setter function for the done state
  * @param {function} setSolving  - The setter function for the solving state
- * @param {function} forceUpdate - The top level force rerender function
  */
-function Display({height, solving, volume, speed, setDone, setSolving, forceUpdate}) {
-  // Calculate the time between notes in ms
-  const pause = 60000/speed;
-
-  // Internal arrays representing each tower and the widths of the blocks inside them
-  const t1 = [];
-  for (let i=1; i<=height; i++) t1.push(i);
-  const t2 = t1.map(()=>{return 0});
-  const t3 = t2.map(x=>x);
-
+function Display({height, solving, volume, speed, setDone, setSolving}) {
   // Color pallette arrays
   const rainbow = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
   const light1 = ["rgb(255, 248, 243)", "rgb(163, 228, 219)", "rgb(28, 109, 208)", "rgb(254, 209, 239)"];
 
-  const pallette = light1;
+  const pallette = rainbow;
+
+  // Calculate the time between notes in ms
+  const pause = useMemo(()=>{return 60000/speed}, [speed]);
+
+  // Internal arrays representing each tower and the widths of the blocks inside them
+  const t1 = useMemo( ()=>{
+    const tower = [];
+    for (let i=1; i<=height; i++) tower.push(i);
+    return tower;
+  }, [height]);
+  const t2 = useMemo( ()=>{ return t1.map(()=>{ return 0 }); }, [t1]);
+  const t3 = useMemo(()=>{ return t2.map( x=>x ); }, [t2]);  
 
   // Internal arrays representing the colors of each tower
-  const c1 = t1.map((value, index)=>{return index % pallette.length});
-  const c2 = c1.map(()=>{return -1});
-  const c3 = c2.map(x=>x);
+  const c1 = useMemo(()=>{ return t1.map((value, index)=>{ return index % pallette.length }) }, [t1, pallette.length]);
+  const c2 = useMemo(()=>{ return c1.map(()=>{ return -1 }) }, [c1]);
+  const c3 = useMemo(()=>{ return c2.map(x=>x) }, [c2]);
 
   // States representing each tower
   const [tArr1, setArr1] = useState(t1);
@@ -172,8 +169,16 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
   const [cArr2, setColors2] = useState(c2);
   const [cArr3, setColors3] = useState(c3);
 
-  // Timeout function for pausing between each move
-  const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+  // Set the tower display state whenever the height state changes
+  useEffect(()=>{
+    setArr1([...t1]);
+    setArr2([...t2]);
+    setArr3([...t3]);
+    setColors1([...c1]);
+    setColors2([...c2]);
+    setColors3([...c3]);
+  }, [t1, t2, t3, c1, c2, c3]);
+  
   /**
    * Recursive function for moving a set of blocks from one tower to another
    * without breaking any of the rules of the Tower of Hanoi
@@ -183,36 +188,61 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
    * an mHeight number of blocks will have been removed from the source tower and rebuilt in
    * the correct order on the destination tower while the temporary tower is unchanged. 
    * @function
-   * @param {number}   mHeight - The height of blocks to move 
-   * @param {number[]} source  - An array of widths representing the source tower
-   * @param {number[]} dest    - An array of widths representing the destination tower
-   * @param {number[]} temp    - An array of widths representing the temporary tower
-   * @param {number}   volume  - A number from 0 to 100 representing volume
-   * @param {number}   speed   - A number from 30 to 200 representing BPM
+   * @param {number}   mHeight    - The height of blocks to move 
+   * @param {number[]} setSource  - An array of widths representing the source tower
+   * @param {number[]} setDest    - An array of widths representing the destination tower
+   * @param {number[]} setTemp    - An array of widths representing the temporary tower
+   * @param {number[]} setcSource - An array of color indices representing the source tower colors
+   * @param {number[]} setcDest   - An array of color indices representing the destination tower color
+   * @param {number[]} setcTemp   - An array of color indices representing the temporary tower colors
    */
   const moveTower = useCallback(async (mHeight, 
-                                       source, dest, temp,
-                                       cSource, cDest, cTemp,
-                                       volume, pause) => {
+                                       setSource, setDest, setTemp,
+                                       setcSource, setcDest, setcTemp) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
+      // Timeout function for pausing between each move
+      const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+      let blockInd, blockWidth, blockColor;
       // Find the block to move and store its width before removing it
-      const blockInd = source.findIndex(width => width !== 0);
-      const blockWidth = source[blockInd];
-      const blockColor = cSource[blockInd];
-      source[blockInd] = 0;
-      cSource[blockInd] = -1;
+      setSource((source)=>{
+        blockInd = source.findIndex(width => width !== 0);
+        blockWidth = source[blockInd];
+        const srcCpy = [...source];
+        srcCpy[blockInd] = 0;
+        return srcCpy;
+      });
+
+      // Store the color of the same block and remove the color as well
+      setcSource((cSource)=>{
+        blockColor = cSource[blockInd];
+        const srcCpy = [...cSource];
+        srcCpy[blockInd] = -1;
+        return srcCpy;
+      });
 
       // Find the correct destination index in the dest array and add the stored block
-      const topBlockInd = dest.findIndex(width => width !== 0);
-      const destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
-      dest[destInd] = blockWidth;
-      cDest[destInd] = blockColor;
+      let destInd;
+      setDest((dest)=>{
+        const topBlockInd = dest.findIndex(width => width !== 0);
+        destInd = topBlockInd === -1 ? dest.length-1 : topBlockInd - 1;
+        const destCpy = [...dest];
+        destCpy[destInd] = blockWidth;
+        return destCpy;
+      });
+
+      // Set the color of the same block to the store color
+      setcDest((cDest)=>{
+        const destCpy = [...cDest];
+        destCpy[destInd] = blockColor;
+        return destCpy;
+      });  
 
       // Calculate the the note to play
       const noteInd = ((blockWidth + 3) % 7);
       const noteArr = ["G", "F", "E", "D", "C", "B", "A"];
       
-      const towerHeightLevel = Math.floor(source.length/7);
+      const towerHeightLevel = Math.floor(height/7);
       const startOctArr = ["4", "4", "4", "5", "6", "7", "8"];
       const startOct = startOctArr[towerHeightLevel];
 
@@ -227,44 +257,30 @@ function Display({height, solving, volume, speed, setDone, setSolving, forceUpda
                         .then(function (instrument) {
                         instrument.play(note, 0, {gain: volume/100});
                         });
-      forceUpdate();     // Force rerender to display each step of the algorithm
-
       await timeout(pause);  // Wait some amount of time for all values to update
       return; // Function concludes here when moving a single block
     }
     // Move all the blocks above the bottom block in the source tower to the temporary tower
-    await moveTower(mHeight-1, source, temp, dest, cSource, cTemp, cDest, volume, pause); 
+    await moveTower(mHeight-1, setSource, setTemp, setDest, setcSource, setcTemp, setcDest); 
     // Move the the bottom block in the source tower to the destination tower
-    await moveTower(1, source, dest, temp, cSource, cDest, cTemp, volume, pause);
+    await moveTower(1, setSource, setDest, setTemp, setcSource, setcDest, setcTemp);
     // Move all the blocks that were moved to the temporary tower to the destination tower
-    await moveTower(mHeight-1, temp, dest, source, cTemp, cDest, cSource, volume, pause);
-  }, [forceUpdate]);
-
-  // Set the tower display state whenever the height state changes
-  useEffect(()=>{
-    setArr1(t1);
-    setArr2(t2);
-    setArr3(t3);
-    setColors1(c1);
-    setColors2(c2);
-    setColors3(c3);
-  }, [height]);
-
+    await moveTower(mHeight-1, setTemp, setDest, setSource, setcTemp, setcDest, setcSource);
+  }, [volume, pause, height]); 
   
   // Solve function runs when solving state is true
   useEffect(() => {
     const solve = async ()=>{
       if (solving) {
         await moveTower(height, 
-                        tArr1, tArr3, tArr2, 
-                        cArr1, cArr3, cArr2, 
-                        volume, pause);
+                        setArr1, setArr3, setArr2, 
+                        setColors1, setColors3, setColors2);
         setSolving(false);
         setDone(true); 
       }
     }
     solve();
-  }, [solving, moveTower, height, tArr1, tArr2, tArr3, setSolving, setDone]);
+  }, [solving]);
 
   // Generate JSX based on states
   const firstTower = tArr1.map((width, index)=>{
