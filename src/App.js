@@ -146,12 +146,8 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
   const pause = useMemo(()=>{return 60000/speed}, [speed]);
 
   // Internal arrays representing each tower and the widths of the blocks inside them
-  const t1 = useMemo( ()=>{
-    const tower = [];
-    for (let i=1; i<=height; i++) tower.push(i);
-    return tower;
-  }, [height]);
-  const t2 = useMemo( ()=>{ return t1.map(()=>{ return 0 }); }, [t1]);
+  const t1 = useMemo(()=>{ return [...Array(height).keys()].map( x=>x+1 ) }, [height]);
+  const t2 = useMemo(()=>{ return t1.map(()=>{ return 0 }); }, [t1]);
   const t3 = useMemo(()=>{ return t2.map( x=>x ); }, [t2]);  
 
   // Internal arrays representing the colors of each tower
