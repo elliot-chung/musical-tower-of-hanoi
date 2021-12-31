@@ -135,10 +135,12 @@ function ControlBar({height, setHeight, volume,
  */
 function Display({height, solving, volume, speed, setDone, setSolving}) {
   // Color pallette arrays
+  const ryb = ["red", "yellow", "blue"];
+  const rgb = ["red", "green", "blue"];
   const rainbow = ["red", "orange", "yellow", "green", "blue", "indigo", "violet"];
   const light1 = ["rgb(255, 248, 243)", "rgb(163, 228, 219)", "rgb(28, 109, 208)", "rgb(254, 209, 239)"];
 
-  const pallette = rainbow;
+  const pallette = ryb;
 
   // Calculate the time between notes in ms
   const pause = useMemo(()=>{return 60000/speed}, [speed]);
@@ -262,8 +264,6 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
         return destCpy;
       });  
 
-      
-      
       await timeout(pause);  // Wait some amount of time for all values to update
       return; // Function concludes here when moving a single block
     }
