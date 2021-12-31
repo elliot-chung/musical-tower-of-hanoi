@@ -18,6 +18,10 @@
     font-family: 'Montserrat', sans-serif;
 }
 
+::selection {
+    background-color: var(--accent-color-light);
+}
+
 main {
     margin-left: min(50vw, 300px);
 
