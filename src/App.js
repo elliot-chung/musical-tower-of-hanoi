@@ -177,6 +177,27 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
   const Soundfont = useMemo(()=>{ return require('soundfont-player') }, []);
   const ac = useMemo(()=>{ return new AudioContext() }, []);
   const sfPromise = useMemo(()=>{ return Soundfont.instrument(ac, 'acoustic_grand_piano') }, []);
+
+  const findNote = useCallback((blockWidth)=>{
+    // Calculate the the note to play
+    const noteInd = ((blockWidth + 3) % 7);
+    const noteArr = ["G", "F", "E", "D", "C", "B", "A"];
+    
+    const towerHeightLevel = Math.floor(height/7);
+    const startOctArr = ["4", "4", "4", "5", "6", "7", "8"];
+    const startOct = startOctArr[towerHeightLevel];
+
+    const blockHeightLevel = Math.ceil((blockWidth-1)/7);
+    const octArr = ["1", "2", "3", "4", "5", "6", "7", "8"];
+    const octStartInd = startOct-1;
+    const octInd = octStartInd - blockHeightLevel;
+
+    // Return the note
+    return `${noteArr[noteInd]}${octArr[octInd]}`;
+  },[height]);
+
+  // Timeout function for pausing between each move
+  const timeout = useCallback(ms => new Promise(resolve => setTimeout(resolve, ms)),[]);
   
   /**
    * Recursive function for moving a set of blocks from one tower to another
@@ -195,15 +216,15 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
    * @param {number[]} setcDest   - An array of color indices representing the destination tower color
    * @param {number[]} setcTemp   - An array of color indices representing the temporary tower colors
    */
-  const moveTower = useCallback(async (mHeight, 
+  const moveTower = useCallback(async (mHeight,
                                        setSource, setDest, setTemp,
                                        setcSource, setcDest, setcTemp) => {
     if (mHeight === 1) { // Recursive base case, a single block is moved 
-      // Timeout function for pausing between each move
-      const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-      let blockInd, blockWidth, blockColor;
+      
+      const instrument = await sfPromise; // Variables for playing notes
+      
       // Find the block to move and store its width before removing it
+      let blockInd, blockWidth, blockColor;
       setSource((source)=>{
         blockInd = source.findIndex(width => width !== 0);
         blockWidth = source[blockInd];
@@ -212,6 +233,8 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
         return srcCpy;
       });
 
+      const note = findNote(blockWidth); // Run find note function
+
       // Store the color of the same block and remove the color as well
       setcSource((cSource)=>{
         blockColor = cSource[blockInd];
@@ -219,6 +242,8 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
         srcCpy[blockInd] = -1;
         return srcCpy;
       });
+
+      volume !== 0 && instrument.play(note, 0, {gain: volume/100}); // Play the note
 
       // Find the correct destination index in the dest array and add the stored block
       let destInd;
@@ -237,23 +262,8 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
         return destCpy;
       });  
 
-      // Calculate the the note to play
-      const noteInd = ((blockWidth + 3) % 7);
-      const noteArr = ["G", "F", "E", "D", "C", "B", "A"];
       
-      const towerHeightLevel = Math.floor(height/7);
-      const startOctArr = ["4", "4", "4", "5", "6", "7", "8"];
-      const startOct = startOctArr[towerHeightLevel];
-
-      const blockHeightLevel = Math.ceil((blockWidth-1)/7);
-      const octArr = ["1", "2", "3", "4", "5", "6", "7", "8"];
-      const octStartInd = octArr.findIndex(oct=>oct===startOct);
-      const octInd = octStartInd - blockHeightLevel;
-
-      // Play the note
-      const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      const instrument = await sfPromise;
-      volume !== 0 && instrument.play(note, 0, {gain: volume/100});
+      
       await timeout(pause);  // Wait some amount of time for all values to update
       return; // Function concludes here when moving a single block
     }
@@ -269,7 +279,7 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
   useEffect(() => {
     const solve = async ()=>{
       if (solving) {
-        await moveTower(height, 
+        await moveTower(height,
                         setArr1, setArr3, setArr2, 
                         setColors1, setColors3, setColors2);
         setSolving(false);
