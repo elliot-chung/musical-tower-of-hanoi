@@ -18,10 +18,6 @@
     font-family: 'Montserrat', sans-serif;
 }
 
-::selection {
-    background-color: var(--accent-color-light);
-}
-
 main {
     margin-left: min(50vw, 300px);
 
@@ -58,6 +54,10 @@ main {
 
 .sidebar > label > p {
     padding-bottom: 10px;
+    -webkit-user-select: none;  
+    -moz-user-select: none;    
+    -ms-user-select: none;      
+    user-select: none;
 }
 
 .slider {
