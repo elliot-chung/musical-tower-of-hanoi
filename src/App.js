@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import './index.css'; 
-const Soundfont = require('soundfont-player');
-const ac = new AudioContext()
 
 /**
  * This is the top level App component
@@ -174,6 +172,11 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
     setColors2([...c2]);
     setColors3([...c3]);
   }, [t1, t2, t3, c1, c2, c3]);
+
+  // Variables for playing sounds
+  const Soundfont = useMemo(()=>{ return require('soundfont-player') }, []);
+  const ac = useMemo(()=>{ return new AudioContext() }, []);
+  const sfPromise = useMemo(()=>{ return Soundfont.instrument(ac, 'acoustic_grand_piano') }, []);
   
   /**
    * Recursive function for moving a set of blocks from one tower to another
@@ -249,10 +252,8 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
 
       // Play the note
       const note = `${noteArr[noteInd]}${octArr[octInd]}`;
-      volume !== 0 && Soundfont.instrument(ac, "acoustic_grand_piano")
-                        .then(function (instrument) {
-                        instrument.play(note, 0, {gain: volume/100});
-                        });
+      const instrument = await sfPromise;
+      volume !== 0 && instrument.play(note, 0, {gain: volume/100});
       await timeout(pause);  // Wait some amount of time for all values to update
       return; // Function concludes here when moving a single block
     }
