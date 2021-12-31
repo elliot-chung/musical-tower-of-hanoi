@@ -63,7 +63,8 @@ function ControlBar({height, setHeight, volume,
                      setVolume, solving, setSolving, 
                      done, setDone, speed, 
                      setSpeed, setReset}) {
-  // Solve function runs upon clicking 'Solve'
+
+  // Solve function that runs upon clicking 'Solve'
   const solve = useCallback((event) => {
     event.preventDefault();
     setSolving(true);
@@ -178,8 +179,15 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
   // Variables for playing sounds
   const Soundfont = useMemo(()=>{ return require('soundfont-player') }, []);
   const ac = useMemo(()=>{ return new AudioContext() }, []);
-  const sfPromise = useMemo(()=>{ return Soundfont.instrument(ac, 'acoustic_grand_piano') }, []);
+  const sfPromise = useMemo(()=>{ return Soundfont.instrument(ac, 'acoustic_grand_piano') }, [Soundfont, ac]);
 
+  /**
+   * Function that returns a note based on the width parameter and the height of the 
+   * current tower
+   * @function
+   * @param   {number} blockWidth - The width of the block to find the corresponding note of
+   * @returns {string}            - The note associated with this block width
+   */
   const findNote = useCallback((blockWidth)=>{
     // Calculate the the note to play
     const noteInd = ((blockWidth + 3) % 7);
@@ -198,7 +206,11 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
     return `${noteArr[noteInd]}${octArr[octInd]}`;
   },[height]);
 
-  // Timeout function for pausing between each move
+  /**
+   * Timeout function for pausing between each solve step
+   * @function
+   * @param {number} ms - The pause duration in milliseconds
+   */
   const timeout = useCallback(ms => new Promise(resolve => setTimeout(resolve, ms)),[]);
   
   /**
@@ -273,21 +285,28 @@ function Display({height, solving, volume, speed, setDone, setSolving}) {
     await moveTower(1, setSource, setDest, setTemp, setcSource, setcDest, setcTemp);
     // Move all the blocks that were moved to the temporary tower to the destination tower
     await moveTower(mHeight-1, setTemp, setDest, setSource, setcTemp, setcDest, setcSource);
-  }, [volume, pause, height]); 
+  }, [volume, pause, findNote, sfPromise, timeout]); 
   
+  /**
+   * The solve function that solves the tower and sets the solving and done state afterwards
+   * @function
+   */
+  const solve = useCallback(async ()=>{
+      await moveTower(height,
+                      setArr1, setArr3, setArr2, 
+                      setColors1, setColors3, setColors2);
+      setSolving(false);
+      setDone(true); 
+  }, 
+  [moveTower, setSolving, setDone, 
+   height, setArr1, setArr2, setArr3, 
+   setColors1, setColors2, setColors3,
+  ]);
+
   // Solve function runs when solving state is true
   useEffect(() => {
-    const solve = async ()=>{
-      if (solving) {
-        await moveTower(height,
-                        setArr1, setArr3, setArr2, 
-                        setColors1, setColors3, setColors2);
-        setSolving(false);
-        setDone(true); 
-      }
-    }
-    solve();
-  }, [solving]);
+    solving && solve();
+  }, [solving, solve]);
 
   // Generate JSX based on states
   const firstTower = tArr1.map((width, index)=>{
