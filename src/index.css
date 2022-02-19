@@ -87,6 +87,23 @@ main {
   background: rgb(187, 187, 187);
 }
 
+.selectionBox {
+  display: flex;
+  width: 90%;
+  height: 40px;
+  border: none;
+  border-radius: 20px;
+  background: white;
+  text-align: center;
+  text-align-last: center;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.selectionBox option {
+  text-align: center;
+  border: none;
+}
+
 .submit {
   background-color: var(--accent-color-light);
   border: none;

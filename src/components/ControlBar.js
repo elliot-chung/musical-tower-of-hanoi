@@ -56,10 +56,12 @@ function ControlBar({
       <label className="style" htmlFor="style">
         <p>Style: </p>
         <select
+          className="selectionBox"
           id="style"
           onChange={(event) => {
             setStyle(styleObj[event.target.value]);
           }}
+          disabled={solving || done}
         >
           {Object.keys(styleObj).map(
             (key) =>

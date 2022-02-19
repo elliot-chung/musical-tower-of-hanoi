@@ -14,7 +14,7 @@ function App() {
   const [solving, setSolving] = useState(false);
   const [done, setDone] = useState(false);
   const [speed, setSpeed] = useState(150);
-  const [reset, setReset] = useState(false);
+  const [, setReset] = useState(false);
 
   //Return the DOM element
   return (
