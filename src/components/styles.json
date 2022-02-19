@@ -1,0 +1,25 @@
+{
+    "Red Yellow Blue": ["red", "yellow", "blue"],
+    "Red Green Blue" : ["red", "green", "blue"],
+    "Rainbow" : [
+      "red",
+      "orange",
+      "yellow",
+      "green",
+      "blue",
+      "indigo",
+      "violet"
+    ],
+    "Icy": [
+      "rgb(255, 248, 243)",
+      "rgb(163, 228, 219)",
+      "rgb(28, 109, 208)",
+      "rgb(254, 209, 239)"
+    ],
+    "Beach Tones": [
+      "rgb(19, 148, 135)",
+      "rgb(134, 198, 244)",
+      "rgb(255, 241, 206)",
+      "rgb(210, 157, 43)"
+    ]
+}

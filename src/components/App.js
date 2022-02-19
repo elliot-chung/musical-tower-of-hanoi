@@ -8,6 +8,7 @@ import Display from "./Display";
  */
 function App() {
   // Top level states
+  const [style, setStyle] = useState(["Red", "Yellow", "Blue"]);
   const [height, setHeight] = useState(3);
   const [volume, setVolume] = useState(100);
   const [solving, setSolving] = useState(false);
@@ -19,6 +20,8 @@ function App() {
   return (
     <div className="App">
       <ControlBar
+        style={style}
+        setStyle={setStyle}
         height={height}
         setHeight={setHeight}
         volume={volume}
@@ -33,6 +36,7 @@ function App() {
       />
       <main>
         <Display
+          style={style}
           height={height}
           solving={solving}
           volume={volume}

@@ -3,6 +3,7 @@ import Block from "./Block";
 /**
  * Primary display area component containing the towers
  * @constructor
+ * @param {number}   style       - The style state of the app
  * @param {number}   height      - The height state of the app
  * @param {boolean}  solving     - The solving state of the app
  * @param {number}   volume      - The volume state of the app
@@ -10,34 +11,16 @@ import Block from "./Block";
  * @param {function} setDone     - The setter function for the done state
  * @param {function} setSolving  - The setter function for the solving state
  */
-function Display({ height, solving, volume, speed, setDone, setSolving }) {
-  // Color pallette arrays
-  const ryb = ["red", "yellow", "blue"];
-  const rgb = ["red", "green", "blue"];
-  const rainbow = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "indigo",
-    "violet",
-  ];
-  const light1 = [
-    "rgb(255, 248, 243)",
-    "rgb(163, 228, 219)",
-    "rgb(28, 109, 208)",
-    "rgb(254, 209, 239)",
-  ];
-
-  const light2 = [
-    "rgb(19, 148, 135)",
-    "rgb(134, 198, 244)",
-    "rgb(255, 241, 206)",
-    "rgb(210, 157, 43)",
-  ];
-
-  const pallette = ryb;
+function Display({
+  style,
+  height,
+  solving,
+  volume,
+  speed,
+  setDone,
+  setSolving,
+}) {
+  const pallette = style;
 
   // Calculate the time between notes in ms
   const pause = useMemo(() => {

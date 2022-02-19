@@ -1,7 +1,10 @@
 import { useCallback } from "react";
+import * as styleObj from "./styles.json";
 /**
  * Controls for solving a tower of a specific height
  * @constructor
+ * @param {number}   style      - The style state of the app
+ * @param {function} setStyle   - The setter function for the style state
  * @param {number}   height     - The height state of the app
  * @param {function} setHeight  - The setter function for the height state
  * @param {number}   volume     - The volume state of the app
@@ -15,6 +18,8 @@ import { useCallback } from "react";
  * @param {function} setReset   - The setter function for the reset state
  */
 function ControlBar({
+  style,
+  setStyle,
   height,
   setHeight,
   volume,
@@ -48,6 +53,24 @@ function ControlBar({
       } // Reset if solving/done otherwise start solve
       className="sidebar"
     >
+      <label className="style" htmlFor="style">
+        <p>Style: </p>
+        <select
+          id="style"
+          onChange={(event) => {
+            setStyle(styleObj[event.target.value]);
+          }}
+        >
+          {Object.keys(styleObj).map(
+            (key) =>
+              key !== "default" && (
+                <option key={key} value={key}>
+                  {key}
+                </option>
+              )
+          )}
+        </select>
+      </label>
       <label className="height">
         <p>Tower Height: {height}</p> {/* Display Tower Height */}
         <input
