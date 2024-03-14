@@ -1,5 +1,5 @@
 # The Musical Tower of Hanoi
-## [Link to the Website](https://ec-2018.github.io/musical-tower-of-hanoi/)
+## [Link to the Website](https://elliot-chung.github.io/musical-tower-of-hanoi/)
   
   
 ## The Puzzle Itself
